@@ -15,25 +15,34 @@ using namespace std::chrono;
 InterruptIn button(BUTTON1);
 DigitalOut led(LED1);
 Timer t;
+Ticker flipper; 
 bool flag; 
 
 void start_counting()
 {
     t.start();
-    led = true;
+    //led = true;
 }
 
 void end_counting()
 {
     t.stop();
-    led = false;
+    //led = false;
     flag = true;
+}
+
+void flip_led()
+{
+    led = !led;
 }
 
 int main()
 {
-    button.rise(&start_counting);  // attach the address of the flip function to the rising edge
+    // interrupt when the button is pressed/released
+    button.rise(&start_counting);  
     button.fall(&end_counting);
+    // ticker interruption. Call flip_led every 1s
+    flipper.attach(&flip_led, 500ms);
 
     while (1) {          // wait around, interrupts will interrupt this!
         if(flag){
