@@ -8,30 +8,22 @@
 
 // Blinking rate in milliseconds
 #define BLINKING_RATE     500ms
-DigitalIn sw(PH_1);
+InterruptIn button(PH_1);
+DigitalOut led(LED1);
+
+void flip()
+{
+    led = !led;
+}
 
 int main()
 {
-    // Initialise the digital pin LED1 as an output
-#ifdef LED1
-    DigitalOut led(LED1);
-#else
-    bool led;
-#endif
-    int button;
-
-    while (true) {
-
-        if(sw.read())
-        {
-            led = true;
-            printf("LED ALLUMEE\n");
-        }
-        else {
-            led = false;
-            printf("LED ETEINTE\n");
-        }
-        
-        //ThisThread::sleep_for(BLINKING_RATE);
+    button.rise(&flip);  // attach the address of the flip function to the rising edge
+    while (1) {          // wait around, interrupts will interrupt this!
+        ThisThread::sleep_for(250);
     }
 }
+
+
+
+
