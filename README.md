@@ -5,7 +5,7 @@ The `main()` function is the single thread in the application. It toggles the st
 
 ## Activate venv
 ```bash
-$ source ~/my_env01/bin/activate  
+$ source ~/env01/bin/activate  
 ```
 ## Configure
 
@@ -34,55 +34,10 @@ $ sixtron_flash
 3. Display target communication
 
 ```bash 
-$ ls /dev/ttyUSB*
-$ minicom -D /dev/ttyUSB0 --baud 9600
-$ mbed sterm --port /dev/ttyUSB0 --baud 9600
+$ mbed minicom -D /dev/ttyUSBx -b <BAUDRATE>
+$ mbed sterm --port /dev/ttyUSBx --baud <BAUDRATE>
 ```
 
-## Sensor communication features (CO2 sensor SCD41-D-R2)
-1. Features
-<<<<<<< HEAD
-I2C communication
-    Adress : 0x62
-=======
-    
-    I2C communication
-    
-    Adress : 0x62
-    
->>>>>>> 1f7348a (Mise à jour README avec les caractéristiques du capteur de CO2)
-    Data type and length :  Data sent to and received from the sensor consists of a sequence of 16-bit commands and/or 16-bit words (each to be interpreted
-                            as unsigned integer with the most significant byte transmitted first). Each data word is immediately succeeded by an 8-bit CRC.
-                            In write direction it is mandatory to transmit the checksum. In read direction it is up to the master to decide if it wants to process the checksum
-    
-See https://sensirion.com/media/documents/48C4B7FB/66E05452/CD_DS_SCD4x_Datasheet_D1.pdf p7 for more details
-
-2. Get a single measure
-<<<<<<< HEAD
-Use measure_single_shot command : 0x219d 
-Wait for max. command duration time (5000ms)
-Then use read_measurement command : 
-
-3. Convert signal
-𝐶𝑂2 [ppm] = 𝑤𝑜𝑟𝑑[0]
-𝑇 = −45 + 175 ∗ 𝑤𝑜𝑟𝑑[1]/(2^16-1)
-𝑅𝐻 = 100 ∗ 𝑤𝑜𝑟𝑑[2]/(2^16-1)
-=======
-    
-    Use measure_single_shot command : 0x219d 
-
-    Wait for max. command duration time (5000ms)
-
-    Then use read_measurement command : 0xec05
-
-3. Convert signal
-
-    𝐶𝑂2 [ppm] = 𝑤𝑜𝑟𝑑[0]
-
-    𝑇 = −45 + 175 ∗ 𝑤𝑜𝑟𝑑[1]/(2^16-1)    
-
-    𝑅𝐻 = 100 ∗ 𝑤𝑜𝑟𝑑[2]/(2^16-1)
->>>>>>> 1f7348a (Mise à jour README avec les caractéristiques du capteur de CO2)
 
 ## Related Links
 
