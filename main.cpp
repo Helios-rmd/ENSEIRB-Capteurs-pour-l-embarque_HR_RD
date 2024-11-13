@@ -6,65 +6,64 @@
 #include "mbed.h"
 
 
-
-
 using namespace std::chrono;
+#define TIMMER_RATE     500ms
 
-// Blinking rate in milliseconds
-#define BLINKING_RATE     500ms
-#define BASE_FREQ         100ms
-InterruptIn button(BUTTON1);
-DigitalOut led(LED1);
-Timer t;
-Ticker flipper; 
-bool flag;
-int freq = 1; 
+I2C i2c(P1_I2C_SDA, P1_I2C_SCL);
 
-void start_counting()
+
+// Make measure using single shot measurement
+void make_single_measure(uint8_t adress, char* measure)
 {
-    t.start();
-    //led = true;
-    // int used to modify led blinking frequency
-    if(freq >= 6){
-        freq = 1;
-    }
-    else{
-        freq +=1;
-    }
+    uint8_t addr8bit_write = adress<<1;
+    uint8_t addr8bit_read = addr8bit_write + 1;
+    char cmd[2];
+    cmd[0] = 0x21;
+    cmd[1] = 0x9D;
+    int error;
+    error = i2c.write(addr8bit_write, cmd, 2);
+    if(error)
+       printf("NACK sur single_shot_measure\n");
+        
+    ThisThread::sleep_for(5000ms);
+
+    cmd[0] = 0xec;
+    cmd[1] = 0x05;
+    error = i2c.write(addr8bit_write, cmd, 2);
+    if(error)
+        printf("NACK sur read_measure\n");
+
+    ThisThread::sleep_for(5ms);
+    error = i2c.read(addr8bit_read, measure, 6);
+    if(error)
+        printf("NACK sur lecture\n");
 }
 
-void end_counting()
+// Convert measure to usable values
+void convert(char* measure, float* result)
 {
-    t.stop();
-    //led = false;
-    flag = true;
-}
-
-// Function called by ticker interruption to blink the LED 
-void flip_led()
-{
-    led = !led;
+    result[0] = (measure[0]<<8)|measure[1];
+    result[1] = (-45.0)+175.0*(float)(((measure[3]<<8))|(measure[4]))/65535.0;
+    result[2] = 100.0*(float)((measure[6]<<8)|measure[7])/65535.0;
 }
 
 int main()
 {
-    // interrupt when the button is pressed/released
-    button.rise(&start_counting);  
-    button.fall(&end_counting);
-    // ticker interruption. Call flip_led every BASE_FREQ ms. 
-    flipper.attach(&flip_led, BASE_FREQ);
+    uint8_t addr7bit = 0x62;
+    char measure[9];
+    float result[3];
 
-    while (1) {          // wait around, interrupts will interrupt this!
-        if(flag){
-            printf("The button was pressed during %llu ms\n", duration_cast<milliseconds>(t.elapsed_time()).count());
-            // Detach the flipper 
-            flipper.detach();
-            // Attach it with the new freq. 
-            flipper.attach(&flip_led, BASE_FREQ*freq); 
-            flag = false; 
-            t.reset();
-        }
-        ThisThread::sleep_for(250ms);
+
+    while(1){
+        
+        make_single_measure(addr7bit, measure);
+        char cmd[2];
+        convert(measure, result);
+
+        printf("C02[ppm] = %d\n", (int)roundf(result[0]));
+        printf("Temp = %d C\n", (int)roundf(result[1]));
+        printf("Humidity = %d\n", (int)roundf(result[2]));
+        printf("\n");
     }
 }
 
