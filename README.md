@@ -35,6 +35,7 @@ $ sixtron_flash
 
 ```bash 
 $ ls /dev/ttyUSB*
+$ minicom -D /dev/ttyUSB0 --baud 9600
 $ mbed sterm --port /dev/ttyUSB0 --baud 9600
 ```
 
