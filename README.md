@@ -5,7 +5,7 @@ The `main()` function is the single thread in the application. It toggles the st
 
 ## Activate venv
 ```bash
-$ source ~/env01/bin/activate  
+$ source ~/my_env01/bin/activate  
 ```
 ## Configure
 
@@ -34,8 +34,8 @@ $ sixtron_flash
 3. Display target communication
 
 ```bash 
-$ mbed minicom -D /dev/ttyUSBx -b <BAUDRATE>
-$ mbed sterm --port /dev/ttyUSBx --baud <BAUDRATE>
+$ ls /dev/ttyUSB*
+$ mbed sterm --port /dev/ttyUSB0 --baud 9600
 ```
 
 ## Sensor communication features (CO2 sensor SCD41-D-R2)
@@ -63,7 +63,7 @@ See https://sensirion.com/media/documents/48C4B7FB/66E05452/CD_DS_SCD4x_Datashee
 
     𝐶𝑂2 [ppm] = 𝑤𝑜𝑟𝑑[0]
 
-    𝑇 = −45 + 175 ∗ 𝑤𝑜𝑟𝑑[1]/(2^16-1)
+    𝑇 = −45 + 175 ∗ 𝑤𝑜𝑟𝑑[1]/(2^16-1)    
 
     𝑅𝐻 = 100 ∗ 𝑤𝑜𝑟𝑑[2]/(2^16-1)
 
