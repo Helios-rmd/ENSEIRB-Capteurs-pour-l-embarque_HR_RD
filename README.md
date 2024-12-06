@@ -1,3 +1,24 @@
+# Setup
+
+Suivre les instructions suivantes pour configurer l'environnement : 
+
+```bash
+$ git clone git@github.com:Helios-rmd/ENSEIRB-Capteurs-pour-l-embarque_HR_RD.git
+$ cd ENSEIRB-Capteurs-pour-l-embarque_HR_RD
+$ mbed deploy
+$ mbed new .
+$ mbed target ZEST_CORE_FMLR-72
+$ mbed toolchain GCC_ARM
+```
+
+Pour compiler et flasher : 
+
+```bash
+$ mbed compile
+$ sixtron_flash
+```
+
+
 # Exercices
 
 ## Exercice 1 : LED
@@ -59,9 +80,17 @@ $ mbed compile
 ```
 ## Explication des choix
 ### Gestion du capteur
-Notre capteur communique en I2C avec la zest core. Nous avons créé notre propre driver pour ce capteur dans `co2sensor.cpp`. La classe Co2Sensor regroupe toutes les méthodes utiles pour réaliser des musures. Elle simplifie l'utilisation de ce capteur en proposant uniquement quelques APIs qui proposent une abstraction de la gestion spécifique au capteur. Qui n
+Notre capteur communique en I2C avec la zest core. Nous avons créé notre propre driver pour ce capteur dans `co2sensor.cpp`. La classe Co2Sensor regroupe toutes les méthodes utiles pour réaliser des musures. Elle simplifie l'utilisation de ce capteur en proposant uniquement quelques APIs qui proposent une abstraction de la gestion spécifique au capteur.
 
-# Application Setup
+### Dashboard
+Ici une capture du dashboard ThingsBoard, après avoir volontairement placé la carte dans un environnement chaud, humide et chargé en CO2 (soufle humain avec la carte enfermée dans les mains)
+![capture dashboard things Board](img/dashboard.png)
+
+A continuer
+
+# Archives
+
+Cette partie du Readme contient des notes personelles
 
 The `main()` function is the single thread in the application. It toggles the state of a digital output connected to an LED on the board.
 
