@@ -1,5 +1,67 @@
+# Exercices
 
-## Application functionality
+## Exercice 1 : LED
+
+Se déplacer au commit suivant et compiler:
+```bash
+$ git checkout ee7211fdc6143d3162a716d838085d64bfebb778
+$ mbed compile
+```
+La led verte s'allume quand on presse le bouton.
+
+## Exercice 2 : Allumage Led par interruption
+
+Se déplacer au commit suivant et compiler:
+```bash
+$ git checkout cc0077715c78c56bd167a5305b18043464604cfc
+$ mbed compile
+```
+La led s'allume quand on presse le bouton. Mais cette fois ci en attachant une fonction à l'interrubption générée par un appui bouton
+
+## Exercice 3 : Allumage Led avec Timmer
+
+Se déplacer au commit suivant et compiler:
+```bash
+$ git checkout 0e273eb97394cf5499576be2143933d2f2c4c05a
+$ mbed compile
+```
+La led s'allume quand on presse le bouton. Mais cette fois ci en attachant une fonction à l'interrubption générée par un appui bouton.
+
+## Exercice 4 :  Contrôle de la LED par un ticker
+
+Se déplacer au commit suivant et compiler:
+```bash
+$ git checkout 1296f49f59e710f4f4a61def5e64331f8e664bf7
+$ mbed compile
+```
+La led blink seule. Mais cette fois ci avec un ticker.
+
+## Exercice 5 :  Contrôle de la frequence de clignotement avec le bouton
+
+Se déplacer au commit suivant et compiler:
+```bash
+$ git checkout a7346233ede5d163e1d907eee8d042b392afee6f
+$ mbed compile
+```
+
+Les appui bouton changent la frequence de clignotement de la led.
+
+# Projet
+
+## Présentation 
+L'objectif de ce projet est de récupérer les données d'un capteur pour les transmettre vers une plateforme cloud (Things Borad).
+En utilisant la zest core FMLR-72 et une zest sensor équipée d'un capteur de CO2.
+### Configuration
+Pour le projet il faut se placer sur le dernier commit :
+```bash
+$ git checkout c153276aca9aaaf94430bc2804cbbbe76b694476
+$ mbed compile
+```
+## Explication des choix
+### Gestion du capteur
+Notre capteur communique en I2C avec la zest core. Nous avons créé notre propre driver pour ce capteur dans `co2sensor.cpp`. La classe Co2Sensor regroupe toutes les méthodes utiles pour réaliser des musures. Elle simplifie l'utilisation de ce capteur en proposant uniquement quelques APIs qui proposent une abstraction de la gestion spécifique au capteur. Qui n
+
+# Application Setup
 
 The `main()` function is the single thread in the application. It toggles the state of a digital output connected to an LED on the board.
 
@@ -39,7 +101,7 @@ $ minicom -D /dev/ttyUSB0 --baud 9600
 $ mbed sterm --port /dev/ttyUSB0 --baud 9600
 ```
 
-## Sensor communication features (CO2 sensor SCD41-D-R2)
+# Sensor communication features (CO2 sensor SCD41-D-R2)
 1. Features
     
     I2C communication
