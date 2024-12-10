@@ -80,13 +80,57 @@ $ mbed compile
 ```
 ## Explication des choix
 ### Gestion du capteur
-Notre capteur communique en I2C avec la zest core. Nous avons créé notre propre driver pour ce capteur dans `co2sensor.cpp`. La classe Co2Sensor regroupe toutes les méthodes utiles pour réaliser des musures. Elle simplifie l'utilisation de ce capteur en proposant uniquement quelques APIs qui proposent une abstraction de la gestion spécifique au capteur.
+#### Récupération et traitement des données
+Notre capteur communique en I2C avec la zest core. Nous avons créé notre propre driver pour ce capteur dans `co2sensor.cpp`. La classe Co2Sensor regroupe toutes les méthodes utiles pour faire des mesures. Elle simplifie l'utilisation de ce capteur en proposant uniquement quelques APIs qui proposent une abstraction de la gestion spécifique au capteur.
+Ce driver représente le coeur de notre travail.
+Après une lecture de la datasheet nous avons identifié les commandes d'intérêt et le format de remontée des données.
+Nous avons fait le choix de ne pas déclencher de mesure périodique mais plutôt d'utiliser `measure_single_shot`. Cette commande déclenche une mesure, mais les données ne sont pas remontées automatiquement, il faut faire appel à une deuxième commande, `read_measurement` qui vide le buffer contenant les mesures.
+Les données sont organisées de la manière suivante dans un buffer de 9 octets
+
+
+
+| **Champ**        | **Taille (octets)** |
+|-------------------|-------------------------|
+| **CO2**          | 2                 |
+| **CRC CO2**      | 1                   |
+| **Température**  | 2                 |
+| **CRC Temp.**    | 1                   |
+| **Humidité RH**  | 2                 |
+| **CRC RH**       | 1                   |
+
+Le capteur ne fournit pas directement les mesures, il faut appliquer un calcul sur la donnée pour quelle représente bien la grandeur attendue. Les formules à appliquer sur les données brutes sont données dans la datasheet. Nous avons intégré toutes ces informations dans cette fonction. Elle applique tous les traitements nécessaires. 
+
+```c
+void Co2Sensor::convert_measure()
+{
+
+    result[0] = (measure[0]<<8)|measure[1];
+    result[1] = (-45.0)+175.0*(float)(((measure[3]<<8))|(measure[4]))/65535.0;
+    result[2] = (100.0*(float)((measure[6]<<8)|measure[7]))/65535.0; 
+}
+```
+
+#### Gestion des timmings
+Les timings sont essentiels pour laisser le temps au capteur de faire sa mesure avant d'essayer de la lire. Sans cela, les données pourraient être corrompues. Toutefois, les pauses bloquantes gênent les systèmes multitâches. Une approche non bloquante, comme l’utilisation d’un timer, permettrait une gestion plus efficace des ressources CPU. Nous avons opté ici pour une approche plus simple, étant donné que nous avions peu de contraintes à respecter. 
+
+### Communication LoRa
+
+Nous nous sommes basés sur le code fourni pour la communication LoRa. Nous avons simplement rajouté une fonction qui récupère et formate les données du capteur, il s'agit de la fonction `get_sensor_measure()`.
+Cette fonction appelle les méthodes définies dans la classe co2sensor pour lancer une mesure et obtenir les résultat de mesure.
+Les données sont mises en forme en leur attribuant un label, la syntaxe suivante doit obligatoirement être respectée pour que les données soient bien traitées par la plateforme cloud. 
+
+**La syntaxe est la suivante:**
+```text
+{"label1": data1, "label2": data2, ..., "labelN": dataN}  
+```
+L'appel à la fonction `get_sensor_measure()` a lieu dans `send_message()`. Les mesures sont ainsi reportées periodiquement à la gateway LoRa, car la macro `MBED_CONF_LORA_DUTY_CYCLE_ON`est activée
+
 
 ### Dashboard
-Ici une capture du dashboard ThingsBoard, après avoir volontairement placé la carte dans un environnement chaud, humide et chargé en CO2 (soufle humain avec la carte enfermée dans les mains)
+Ici une capture du dashboard ThingsBoard, après avoir volontairement placé la carte dans un environnement chaud, humide et chargé en CO2 (souffle humain avec la carte enfermée dans les mains)
 ![capture dashboard things Board](img/dashboard.png)
 
-A continuer
+Nous avons fait le choix d'afficher un graphique pour chaque donnée, ils affichent une courbe sur l'heure en cours. De plus un widget affiche les données en temps réel.
 
 # Archives
 
